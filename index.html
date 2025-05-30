@@ -116,17 +116,19 @@
             width: 85vw;
             max-width: 99vw;
             height: auto;
-            max-height: 128vw; /* 2/3比例，128=85/2*3约等 */
-       }
-       }
-       @media (max-width: 480px) {
-           .poster-img {
-           width: 96vw;
-           max-width: 99vw;
-           height: auto;
-           max-height: 144vw; /* (96/2*3)=144 保证2:3 */
-      }
-      }
+            max-height: calc(85vw * 1.5); /* 保持2:3比例 */
+            aspect-ratio: 2 / 3; /* 新增比例锁定 */
+        }
+        }
+        @media (max-width: 480px) {
+            .poster-img {
+            width: 96vw;
+            max-width: 99vw;
+            height: auto;
+            max-height: calc(96vw * 1.5); /* 保持2:3比例 */
+            aspect-ratio: 2 / 3; /* 新增比例锁定 */
+        }
+        }
     </style>
 </head>
 <body>
@@ -330,6 +332,28 @@ function nextMovie() { showMovie((currentIndex + 1) % movies.length); }
 
 document.addEventListener('DOMContentLoaded', () => {
     createMovieCards();
+    
+    // 添加触摸事件处理
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const minSwipeDistance = 50; // 最小滑动距离
+    
+    movieContainer.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+
+    movieContainer.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        const deltaX = touchEndX - touchStartX;
+        
+        if (Math.abs(deltaX) > minSwipeDistance) {
+            if (deltaX > 0) {
+                prevMovie();
+            } else {
+                nextMovie();
+            }
+        }
+    }, false);
     prevButton.addEventListener('click', prevMovie);
     nextButton.addEventListener('click', nextMovie);
     document.addEventListener('keydown', (e) => {
